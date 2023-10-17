@@ -13,4 +13,4 @@ Requirements
  * Swift 5.7+
  * iPhone only
  * Portrait device orientation
- * Swift UI
+ * SwiftUI
