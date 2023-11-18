@@ -107,13 +107,8 @@ struct ArticleListView: View {
                             print("Error fetching articles: \(error)")
                         }
                     }
-                    
-                    
-                    
-                }
-                
-            }
-            
+                }   
+            }    
         }
     }
     
