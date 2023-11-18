@@ -21,28 +21,8 @@ struct ArticleListView: View {
     var body: some View {
         
         if (monitor.status.rawValue == "disconnected") {
-            VStack {
-                Toggle("Dark Mode", isOn: $isDarkMode)
-                    .padding(.horizontal)
-                    .preferredColorScheme(isDarkMode ? .dark : .light)
-                
-                TextField("Search", text: $searchQuery)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
-                    .padding(.horizontal)
-                
-                DatePicker("Start Date", selection: $startDate)
-                    .datePickerStyle(CompactDatePickerStyle())
-                    .padding()
-                
-                DatePicker("End Date", selection: $endDate)
-                    .datePickerStyle(CompactDatePickerStyle())
-                    .padding()
-                
-                TextField("No Internet", text: $noInternetConnection)
-                    .padding()
-                
-            }
+            VStack {            
+                NoInternetView()
         }
         
         else {
