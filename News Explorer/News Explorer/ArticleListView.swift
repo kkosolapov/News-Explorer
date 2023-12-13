@@ -4,15 +4,18 @@ import Network
 struct ArticleListView: View {
     
     @StateObject var networkManager: NetworkManager
-    @State var selectedSortingParameter: SortingParameter = .title
-    @State var selectedArticle: Article?
-    @State var searchQuery: String = ""
-    @State var noInternetConnection: String = "No network connection"
     
-    @State var startDate = Date()
-    @State var endDate = Date()
+    @State private var isLoadingInfo = true
     
-    @StateObject var monitor = NetworkManager()
+    @State private var selectedSortingParameter: SortingParameter = .title
+    @State private var selectedArticle: Article?
+    @State private var searchQuery: String = ""
+    @State private var noInternetConnection: String = "No network connection"
+    
+    @State private var startDate = Date()
+    @State private var endDate = Date()
+    
+    @StateObject private var monitor = NetworkManager()
     
     @State private var showNetworkAlert = false
     
@@ -21,37 +24,46 @@ struct ArticleListView: View {
     var body: some View {
         
         if (monitor.status.rawValue == "disconnected") {
-            VStack {            
-                NoInternetView()
+            NoInternetView()
         }
         
         else {
             
             VStack {
-                Toggle("Dark Mode", isOn: $isDarkMode)
-                    .padding(.horizontal)
-                    .preferredColorScheme(isDarkMode ? .dark : .light)
                 
-                TextField("Search", text: $searchQuery)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
-                    .padding(.horizontal)
-                
-                DatePicker("Start Date", selection: $startDate)
-                    .datePickerStyle(CompactDatePickerStyle())
-                    .padding()
-                
-                DatePicker("End Date", selection: $endDate)
-                    .datePickerStyle(CompactDatePickerStyle())
-                    .padding()
-                
-                Picker("Sort By", selection: $selectedSortingParameter) {
-                    ForEach(SortingParameter.allCases, id: \.self) { parameter in
-                        Text(parameter.rawValue)
-                    }
+                if isLoadingInfo {
+                    
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .blue))
                 }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding()
+                
+                else {
+                    Toggle("Dark Mode", isOn: $isDarkMode)
+                        .padding(.horizontal)
+                        .preferredColorScheme(isDarkMode ? .dark : .light)
+                    
+                    TextField("Search", text: $searchQuery)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+                    
+                    DatePicker("Start Date", selection: $startDate)
+                        .datePickerStyle(CompactDatePickerStyle())
+                        .padding()
+                    
+                    DatePicker("End Date", selection: $endDate)
+                        .datePickerStyle(CompactDatePickerStyle())
+                        .padding()
+                    
+                    Picker("Sort By", selection: $selectedSortingParameter) {
+                        ForEach(SortingParameter.allCases, id: \.self) { parameter in
+                            Text(parameter.rawValue)
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding()
+                    
+                }
                 
                 List(sortedArticles, id: \.title) { article in
                     Button(action: {
@@ -79,6 +91,8 @@ struct ArticleListView: View {
                 }
                 
                 .onAppear {
+                    
+                    loadData()
                     self.networkManager.fetchArticles { result in
                         switch result {
                         case .success:
@@ -87,8 +101,20 @@ struct ArticleListView: View {
                             print("Error fetching articles: \(error)")
                         }
                     }
-                }   
-            }    
+                    
+                }
+                
+                .preferredColorScheme(isDarkMode ? .dark : .light)
+                
+            }
+            
+        }
+    }
+    
+    private func loadData() {
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            isLoadingInfo = false
         }
     }
     
