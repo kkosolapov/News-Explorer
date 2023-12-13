@@ -4,12 +4,12 @@ struct NoInternetView: View {
     
     @AppStorage("isDarkMode") private var isDarkMode = false
     
-    @State var searchQuery: String = ""
+    @State private var searchQuery: String = ""
     
-    @State var startDate = Date()
-    @State var endDate = Date()
+    @State private var startDate = Date()
+    @State private var endDate = Date()
     
-    @State var noInternetConnection: String = "No network connection"
+    @State private var noInternetConnection: String = "No network connection"
     
     var body: some View {
         
