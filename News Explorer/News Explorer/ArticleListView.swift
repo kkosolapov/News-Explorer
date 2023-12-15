@@ -33,8 +33,11 @@ struct ArticleListView: View {
                 
                 if isLoadingInfo {
                     
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                    VStack {
+                        Spacer()
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                    }
                 }
                 
                 else {
@@ -80,9 +83,7 @@ struct ArticleListView: View {
                             .background(Color.gray.opacity(0.1))
                             .cornerRadius(10)
                             .padding(.horizontal, 4)
-                        } else {
-                            Text("No title")
-                        }
+                        } 
                     }
                 }
                 
