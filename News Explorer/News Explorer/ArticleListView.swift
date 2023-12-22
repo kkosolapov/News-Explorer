@@ -38,6 +38,7 @@ struct ArticleListView: View {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .blue))
                     }
+                    
                 }
                 
                 else {
@@ -83,8 +84,21 @@ struct ArticleListView: View {
                             .background(Color.gray.opacity(0.1))
                             .cornerRadius(10)
                             .padding(.horizontal, 4)
-                        } 
+                        }
+                        
                     }
+                }
+                
+                .alert(isPresented: .constant(!searchQuery.isEmpty && sortedArticles.filter {
+                    let titleMatch = $0.title?.localizedCaseInsensitiveContains(searchQuery) ?? false
+                    let descriptionMatch = $0.description?.localizedCaseInsensitiveContains(searchQuery) ?? false
+                    return titleMatch || descriptionMatch
+                }.isEmpty)) {
+                    Alert(
+                        title: Text("No Articles Found"),
+                        message: Text("No articles match your search criteria."),
+                        dismissButton: .default(Text("OK"))
+                    )
                 }
                 
                 .sheet(item: $selectedArticle) { article in
@@ -168,5 +182,12 @@ enum SortingParameter: String, CaseIterable {
 struct ArticleListView_Previews: PreviewProvider {
     static var previews: some View {
         ArticleListView(networkManager: NetworkManager())
+    }
+}
+
+
+extension String {
+    var isNotEmpty: Bool {
+        return !isEmpty
     }
 }
