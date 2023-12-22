@@ -3,19 +3,33 @@ import SwiftUI
 struct ArticleDetailView: View {
     var article: Article
     @State private var image: UIImage? = nil
-
+    
     var body: some View {
-        VStack(alignment: .leading) {
-            if let imageUrl = article.urlToImage, let _ = URL(string: imageUrl) {
-                if let image = image {
-                    Image(uiImage: image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .padding()
+        VStack(alignment: .center) {
+            
+            VStack {
+                if let imageUrl = article.urlToImage, let result_image = URL(string: imageUrl) {
+                    AsyncImage(url: result_image) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFit()
+                        case .failure:
+                            Text("Failed to load image")
+                        @unknown default:
+                            Text("Unknown state")
+                        }
+                    }
                 } else {
-                    ProgressView()
+                    Text("No image available")
                 }
             }
+            
+            
             ScrollView (.horizontal){
                 HStack(){Text("**Title**: \(article.title ?? "")")
                 }
@@ -41,23 +55,6 @@ struct ArticleDetailView: View {
             
         }
         
-        .onAppear {
-            loadImage()
-        }
-    }
-    
-    private func loadImage() {
-        guard let imageUrlString = article.urlToImage, let imageUrl = URL(string: imageUrlString) else {
-            return
-        }
-        
-        URLSession.shared.dataTask(with: imageUrl) { data, response, error in
-            if let data = data, let loadedImage = UIImage(data: data) {
-                DispatchQueue.main.async {
-                    self.image = loadedImage
-                }
-            }
-        }.resume()
     }
     
 }
